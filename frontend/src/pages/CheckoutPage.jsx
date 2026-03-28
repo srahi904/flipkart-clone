@@ -72,20 +72,19 @@ function CheckoutPage() {
   };
 
   const validateAddress = () => {
-    return (
-      address.name &&
-      address.phone &&
-      address.line1 &&
-      address.city &&
-      address.state &&
-      address.pincode &&
-      /^\d{6}$/.test(address.pincode)
-    );
+    if (!address.name?.trim() || address.name.trim().length < 2) return 'Name must be at least 2 characters.';
+    if (!address.phone?.trim() || address.phone.trim().length < 10) return 'Phone must be at least 10 digits.';
+    if (!address.line1?.trim() || address.line1.trim().length < 5) return 'Address Line 1 must be at least 5 characters.';
+    if (!address.city?.trim() || address.city.trim().length < 2) return 'City must be at least 2 characters.';
+    if (!address.state?.trim() || address.state.trim().length < 2) return 'State must be at least 2 characters.';
+    if (!address.pincode?.trim() || !/^\d{6}$/.test(address.pincode.trim())) return 'Pincode must be exactly 6 digits.';
+    return null;
   };
 
   const handleSaveAddress = () => {
-    if (!validateAddress()) {
-      dispatch(addToast({ variant: 'error', message: 'Please fill all required fields with valid values. Pincode must be 6 digits.' }));
+    const errorMsg = validateAddress();
+    if (errorMsg) {
+      dispatch(addToast({ variant: 'error', message: errorMsg }));
       return;
     }
 
@@ -289,7 +288,6 @@ function CheckoutPage() {
                     variant="accent"
                     className="mt-5 px-12"
                     onClick={handleSaveAddress}
-                    disabled={!validateAddress()}
                   >
                     SAVE AND DELIVER HERE
                   </Button>

@@ -41,8 +41,21 @@ api.interceptors.response.use(
       return Promise.reject(new Error('Your session has expired. Please login again.'));
     }
 
-    const message =
-      error.response?.data?.message || error.message || 'Something went wrong';
+    const data = error.response?.data;
+    let message = data?.message || error.message || 'Something went wrong';
+
+    // Extract detailed Zod validation errors if present from the Express backend
+    if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+      const firstError = data.errors[0];
+      if (typeof firstError === 'object' && firstError.message) {
+        // e.g. "body.address.phone: String must contain at least 10 character(s)"
+        const pathStr = firstError.path ? `(${firstError.path.split('.').pop()}): ` : '';
+        message = `${pathStr}${firstError.message}`;
+      } else if (typeof firstError === 'string') {
+        message = firstError;
+      }
+    }
+
     return Promise.reject(new Error(message));
   },
 );
