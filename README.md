@@ -28,8 +28,6 @@ Live stack:
 clone/
 ├── backend/
 ├── frontend/
-├── Assignment_-_Flipkart_Clone.docx.pdf
-├── FLIPKART_CLONE_ROADMAP.md
 ├── package.json
 └── README.md
 ```
@@ -44,8 +42,8 @@ npm install
 
 ### 2. Configure env
 
-Backend env lives in [backend/.env](/c:/Users/hp/Downloads/assignment/clone/backend/.env).
-Frontend env lives in [frontend/.env](/c:/Users/hp/Downloads/assignment/clone/frontend/.env).
+Backend env lives in [backend/.env].
+Frontend env lives in [frontend/.env].
 
 Paste your Neon Postgres connection string into `backend/.env` as `DATABASE_URL`.
 
@@ -95,7 +93,7 @@ Backend: `http://localhost:5000`
 
 1. Create a Neon project and database from the Neon dashboard.
 2. Copy the connection string from Neon.
-3. Paste it into [backend/.env](/c:/Users/hp/Downloads/assignment/clone/backend/.env) as `DATABASE_URL`.
+3. Paste it into [backend/.env] as `DATABASE_URL`.
 4. Run:
 
 ```bash
@@ -107,23 +105,6 @@ npm run dev
 
 Neon is the default database provider for this project in local development and deployment-facing configuration.
 
-## Key API Endpoints
-
-- `GET /api/v1/products`
-- `GET /api/v1/products/:id`
-- `GET /api/v1/categories`
-- `GET /api/v1/cart`
-- `POST /api/v1/cart/items`
-- `PUT /api/v1/cart/items/:itemId`
-- `DELETE /api/v1/cart/items/:itemId`
-- `POST /api/v1/orders`
-- `GET /api/v1/orders`
-- `GET /api/v1/orders/:id`
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `GET /api/v1/wishlist`
-- `POST /api/v1/wishlist`
-- `DELETE /api/v1/wishlist/:productId`
 
 ## Notes
 
