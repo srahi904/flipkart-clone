@@ -1,0 +1,128 @@
+import { useState } from 'react';
+import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import ROUTES from '@/constants/routes';
+import authService from '@/services/authService';
+import { setSession } from '@/store/slices/authSlice';
+import { addToast } from '@/store/slices/uiSlice';
+import { isValidEmail } from '@/utils/validators';
+
+function LoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
+  
+  if (token) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
+
+  const [form, setForm] = useState({
+    email: 'demo@flipkartclone.dev',
+    password: 'Demo@12345',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!isValidEmail(form.email) || !form.password) {
+      dispatch(addToast({ variant: 'error', message: 'Enter a valid email and password' }));
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const session = await authService.login(form);
+      dispatch(setSession(session));
+      navigate(location.state?.from || ROUTES.home, { replace: true });
+    } catch (error) {
+      dispatch(addToast({ variant: 'error', message: error.message }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[var(--fk-gray-bg)] px-4 py-10">
+      <div className="w-full max-w-[780px] overflow-hidden rounded-sm bg-white shadow-lg md:flex">
+        {/* Left Blue Panel */}
+        <div className="flex flex-col justify-between bg-[var(--fk-blue)] px-8 py-10 text-white md:w-[40%]">
+          <div>
+            <h1 className="text-[28px] font-bold leading-tight">Login</h1>
+            <p className="mt-3 text-sm leading-6 text-blue-100">
+              Get access to your Orders, Wishlist and Recommendations
+            </p>
+          </div>
+          <div className="mt-10 hidden md:block">
+            {/* Flipkart-style illustration using SVG */}
+            <svg viewBox="0 0 200 200" className="mx-auto h-40 w-40 opacity-20">
+              <circle cx="100" cy="80" r="40" fill="white" />
+              <rect x="60" y="130" width="80" height="10" rx="5" fill="white" />
+              <rect x="70" y="150" width="60" height="8" rx="4" fill="white" />
+              <rect x="80" y="168" width="40" height="6" rx="3" fill="white" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Right White Panel */}
+        <div className="flex flex-1 flex-col justify-center px-8 py-10 md:px-10">
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-6">
+              <div>
+                <input
+                  value={form.email}
+                  onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter Email"
+                  className="w-full border-b-2 border-slate-300 pb-2 text-sm outline-none transition focus:border-[var(--fk-blue)]"
+                />
+              </div>
+              <div>
+                <input
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter Password"
+                  className="w-full border-b-2 border-slate-300 pb-2 text-sm outline-none transition focus:border-[var(--fk-blue)]"
+                />
+              </div>
+            </div>
+
+            <p className="mt-4 text-xs text-slate-400">
+              By continuing, you agree to Flipkart&apos;s{' '}
+              <span className="text-[var(--fk-blue)]">Terms of Use</span> and{' '}
+              <span className="text-[var(--fk-blue)]">Privacy Policy</span>.
+            </p>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-6 w-full rounded-sm bg-[var(--fk-orange)] py-3.5 text-sm font-bold text-white shadow-sm transition hover:shadow-md disabled:opacity-60"
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+
+            <div className="my-5 flex items-center gap-4">
+              <div className="h-px flex-1 bg-slate-200" />
+              <span className="text-xs font-medium text-slate-400">OR</span>
+              <div className="h-px flex-1 bg-slate-200" />
+            </div>
+
+            <Link
+              to={ROUTES.register}
+              className="block w-full rounded-sm border border-slate-300 py-3 text-center text-sm font-semibold text-[var(--fk-blue)] transition hover:bg-slate-50"
+            >
+              New to Flipkart? Create an account
+            </Link>
+          </form>
+
+          <p className="mt-6 text-center text-xs text-slate-400">
+            Demo credentials are prefilled for quick testing
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default LoginPage;

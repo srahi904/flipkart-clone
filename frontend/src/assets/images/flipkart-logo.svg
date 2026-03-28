@@ -1,0 +1,8 @@
+<svg width="178" height="48" viewBox="0 0 178 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="48" height="48" rx="14" fill="#2874F0"/>
+  <path d="M12 10H27.5C33.299 10 38 14.701 38 20.5C38 26.299 33.299 31 27.5 31H19V38H12V10Z" fill="white"/>
+  <path d="M21 17H27C28.6569 17 30 18.3431 30 20C30 21.6569 28.6569 23 27 23H21V17Z" fill="#FFD740"/>
+  <path d="M28 24L35.5 38H27.7L21.5 26.6L28 24Z" fill="#FFD740"/>
+  <text x="58" y="21" fill="#1F2937" font-family="Space Grotesk, Arial, sans-serif" font-size="20" font-weight="700">Flipkart</text>
+  <text x="58" y="37" fill="#64748B" font-family="DM Sans, Arial, sans-serif" font-size="12" font-weight="700">full stack store</text>
+</svg>
