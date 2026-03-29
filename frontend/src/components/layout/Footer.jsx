@@ -56,7 +56,7 @@ const bottomLinks = [
 function Footer() {
   return (
     <footer className="bg-[var(--footer-bg)] text-white">
-      <div className="page-shell grid gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="page-shell grid grid-cols-2 gap-8 px-4 py-10 lg:grid-cols-4">
         {footerLinks.map((section) => (
           <div key={section.title}>
             <h3 className="mb-3 text-xs font-bold uppercase tracking-[.2em] text-slate-400">

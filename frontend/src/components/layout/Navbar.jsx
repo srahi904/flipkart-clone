@@ -138,7 +138,7 @@ function Navbar() {
     dispatch(clearCartState());
     dispatch(clearWishlistState());
     queryClient.clear();
-    navigate(ROUTES.login);
+    navigate(ROUTES.home);
   };
 
   // Resolve category ID at CLICK time (not render time) to avoid stale links
@@ -237,7 +237,7 @@ function Navbar() {
               ) : (
                 <Link
                   to={ROUTES.login}
-                  className="flex items-center gap-1.5 rounded-[2px] bg-white px-5 py-2 font-semibold text-[var(--fk-blue)]"
+                  className="flex items-center gap-1.5 rounded-[2px] px-5 py-2 font-semibold text-[var(--fk-blue)]"
                 >
                   Login
                   <ChevronDown className="h-3 w-3" />
