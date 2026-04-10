@@ -3,7 +3,7 @@
 Full-stack Flipkart-inspired e-commerce application built from the assignment PDF and roadmap with current package lines as of March 28, 2026.
 
 Live stack:
-- Frontend: React 19.2.4, Vite 8.0.3, React Router DOM 7.13.2, Redux Toolkit 2.11.2, TanStack Query 5.95.2, Tailwind CSS 4.2.2
+- Frontend: React 19.2.4, Vite 8.0.3, React Router DOM 7.13.2, Redux Toolkit 2.11.2, Tailwind CSS 4.2.2
 - Backend: Node.js 24.x, Express 5.2.1, Prisma 7.6.0
 - Database: Neon PostgreSQL
 
