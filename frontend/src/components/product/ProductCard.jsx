@@ -31,7 +31,7 @@ function ProductCard({ product, wishlisted = false, onToggleWishlist, onAddToCar
       </button>
 
       {/* Image */}
-      <Link to={`/products/${product.id}`} className="block p-4">
+      <Link to={`/product/${product.slug}`} className="block p-4">
         <img
           src={primaryImage}
           alt={product.name}
@@ -42,7 +42,7 @@ function ProductCard({ product, wishlisted = false, onToggleWishlist, onAddToCar
 
       {/* Details */}
       <div className="flex-1 flex flex-col gap-1 px-4 pb-4">
-        <Link to={`/products/${product.id}`}>
+        <Link to={`/product/${product.slug}`}>
           <h3 className="text-sm text-slate-700 leading-5 line-clamp-2 hover:text-[var(--fk-blue)] transition">
             {product.name}
           </h3>

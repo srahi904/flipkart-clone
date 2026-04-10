@@ -107,14 +107,17 @@ const getAllProducts = async (req, res, next) => {
 
 const getProductById = async (req, res, next) => {
   try {
-    const productId = Number(req.params.id);
+    const { id } = req.params;
+    const isNumericId = !isNaN(id) && Number.isInteger(Number(id));
 
-    if (!Number.isInteger(productId) || productId <= 0) {
-      throw new ApiError(400, 'Invalid product id');
+    if (!id) {
+      throw new ApiError(400, 'Invalid product identifier');
     }
 
+    const whereClause = isNumericId ? { id: Number(id) } : { slug: id };
+
     const product = await prisma.product.findUnique({
-      where: { id: productId },
+      where: whereClause,
       include: {
         category: true,
         images: { orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }] },

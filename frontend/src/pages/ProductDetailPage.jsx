@@ -38,11 +38,17 @@ function ProductDetailPage() {
   const similarProducts = (similarData?.products || []).filter((p) => String(p.id) !== String(product?.id));
   const recentlyVisitedProducts = recentlyVisitedRaw.filter((p) => String(p.id) !== String(product?.id));
 
-  // Track recently visited product in localStorage
+  // Track recently visited product in localStorage and set page title
   useEffect(() => {
     if (product) {
       addRecentlyVisited(product);
+      document.title = `${product.name} | Flipkart Clone`;
     }
+    
+    // Cleanup title on unmount
+    return () => {
+      document.title = 'Flipkart Clone';
+    };
   }, [product]);
 
   if (isLoading) {

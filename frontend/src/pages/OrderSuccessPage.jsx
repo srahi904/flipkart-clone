@@ -84,7 +84,7 @@ function OrderSuccessPage() {
                   />
                   <div className="flex-1 min-w-0">
                     <Link
-                      to={`/products/${item.productId}`}
+                      to={`/product/${item.product.slug}`}
                       className="text-sm font-medium text-slate-900 hover:text-[var(--fk-blue)] truncate block"
                     >
                       {item.product?.name}

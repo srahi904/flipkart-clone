@@ -212,7 +212,7 @@ function Navbar() {
               }}
               onSuggestionSelect={(item) => {
                 setSearchFocused(false);
-                navigate(`/products/${item.id}`);
+                navigate(`/product/${item.slug}`);
               }}
               onSubmit={(value) => {
                 setSearchFocused(false);

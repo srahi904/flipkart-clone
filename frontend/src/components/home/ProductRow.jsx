@@ -49,7 +49,7 @@ function ProductRow({ title, subtitle, products = [], viewAllLink, bgColor = 'wh
             return (
               <Link
                 key={product.id}
-                to={`/products/${product.id}`}
+                to={`/product/${product.slug}`}
                 className="product-row-card block"
               >
                 <img src={primaryImage} alt={product.name} loading="lazy" />

@@ -17,7 +17,7 @@ function CartItem({ item, onUpdate, onRemove }) {
     <div className="border-b border-slate-100 p-5 last:border-none">
       <div className="flex gap-4">
         {/* Image */}
-        <Link to={`/products/${product.id}`} className="shrink-0">
+        <Link to={`/product/${product.slug}`} className="shrink-0">
           <img
             src={image}
             alt={product.name}
@@ -27,7 +27,7 @@ function CartItem({ item, onUpdate, onRemove }) {
 
         {/* Details */}
         <div className="flex-1 min-w-0">
-          <Link to={`/products/${product.id}`}>
+          <Link to={`/product/${product.slug}`}>
             <h3 className="font-medium text-slate-900 text-sm leading-5 hover:text-[var(--fk-blue)] transition">
               {product.name}
             </h3>
