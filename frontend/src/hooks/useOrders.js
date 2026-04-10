@@ -46,6 +46,7 @@ const useOrders = (orderId) => {
     isOrdersLoading: ordersQuery.isLoading,
     isOrderLoading: orderQuery.isLoading,
     placeOrder: safePlaceOrder,
+    initRazorpay: orderService.initRazorpay,
   };
 };
 

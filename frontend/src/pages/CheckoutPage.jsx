@@ -11,12 +11,22 @@ import useOrders from '@/hooks/useOrders';
 import { addToast } from '@/store/slices/uiSlice';
 import formatCurrency from '@/utils/formatCurrency';
 
+const loadScript = (src) => {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 function CheckoutPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const { cart, isLoading: cartLoading } = useCart();
-  const { placeOrder } = useOrders();
+  const { placeOrder, initRazorpay } = useOrders();
   const [activeStep, setActiveStep] = useState(1);
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
@@ -138,6 +148,61 @@ function CheckoutPage() {
 
     try {
       setSubmitting(true);
+
+      if (paymentMethod === 'card' || paymentMethod === 'upi') {
+        const initData = await initRazorpay();
+
+        if (initData?.isRazorpayEnabled) {
+          const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+          if (!res) {
+            dispatch(addToast({ variant: 'error', message: 'Razorpay SDK failed to load. Are you online?' }));
+            setSubmitting(false);
+            return;
+          }
+
+          const options = {
+            key: initData.key,
+            amount: initData.order.amount,
+            currency: initData.order.currency,
+            name: 'Flipkart Clone',
+            description: 'Order Payment',
+            order_id: initData.order.id,
+            handler: async function (response) {
+              const order = await placeOrder({
+                address: finalAddress,
+                paymentMethod,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+              if (order) {
+                navigate(`/order-success/${order.id}`);
+              } else {
+                setSubmitting(false);
+              }
+            },
+            prefill: {
+              name: user?.name,
+              email: user?.email,
+              contact: finalAddress.phone || user?.phone,
+            },
+            theme: {
+              color: '#2874F0',
+            },
+            modal: {
+              ondismiss: function () {
+                setSubmitting(false);
+              },
+            },
+          };
+
+          const paymentObject = new window.Razorpay(options);
+          paymentObject.open();
+          return; 
+        }
+      }
+
+      // Fallback or Cash on Delivery
       const order = await placeOrder({
         address: finalAddress,
         paymentMethod,
@@ -147,7 +212,8 @@ function CheckoutPage() {
       } else {
         setSubmitting(false);
       }
-    } catch {
+    } catch (error) {
+      // Errors handled by mutations globally, ensure we turn off spinner
       setSubmitting(false);
     }
   };

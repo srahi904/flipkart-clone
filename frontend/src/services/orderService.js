@@ -13,6 +13,10 @@ const orderService = {
     const { data } = await api.get(`/orders/${orderId}`);
     return data.data;
   },
+  async initRazorpay() {
+    const { data } = await api.post('/orders/razorpay-init');
+    return data.data;
+  },
 };
 
 export default orderService;

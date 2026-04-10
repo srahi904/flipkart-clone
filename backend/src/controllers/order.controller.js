@@ -20,6 +20,10 @@ const addressSchema = z.object({
 const placeOrderSchema = z.object({
   body: z.object({
     address: addressSchema,
+    paymentMethod: z.string().optional().default('cod'),
+    razorpay_payment_id: z.string().optional(),
+    razorpay_order_id: z.string().optional(),
+    razorpay_signature: z.string().optional(),
   }),
 });
 
@@ -52,7 +56,7 @@ const getTotals = (items) => {
 const placeOrder = async (req, res, next) => {
   try {
     const {
-      body: { address },
+      body: { address, paymentMethod, razorpay_payment_id, razorpay_order_id, razorpay_signature },
     } = placeOrderSchema.parse({ body: req.body });
 
     const cart = await ensureCart(req.user.id);
@@ -72,6 +76,23 @@ const placeOrder = async (req, res, next) => {
     });
 
     const totals = getTotals(normalizedCart.items);
+
+    const isRazorpayEnabled = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+    if (isRazorpayEnabled && paymentMethod !== 'cod') {
+      if (!razorpay_signature || !razorpay_payment_id || !razorpay_order_id) {
+        throw new ApiError(400, 'Payment verification failed: Missing Razorpay details');
+      }
+      const crypto = require('crypto');
+      const sign = razorpay_order_id + '|' + razorpay_payment_id;
+      const expectedSign = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .update(sign.toString())
+        .digest('hex');
+
+      if (razorpay_signature !== expectedSign) {
+        throw new ApiError(400, 'Payment verification failed: Invalid signature');
+      }
+    }
 
     const order = await prisma.$transaction(async (tx) => {
       const savedAddress = await tx.address.create({
@@ -162,9 +183,61 @@ const getUserOrders = async (req, res, next) => {
   }
 };
 
+const initRazorpay = async (req, res, next) => {
+  try {
+    const isRazorpayEnabled = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+    if (!isRazorpayEnabled) {
+      return res.json(new ApiResponse(200, { isRazorpayEnabled: false }));
+    }
+
+    const cart = await ensureCart(req.user.id);
+    const normalizedCart = formatCart(cart);
+
+    if (!normalizedCart.items.length) {
+      throw new ApiError(400, 'Your cart is empty');
+    }
+
+    normalizedCart.items.forEach((item) => {
+      if (item.product.stock < item.quantity) {
+        throw new ApiError(
+          400,
+          `${item.product.name} only has ${item.product.stock} unit(s) in stock`,
+        );
+      }
+    });
+
+    const totals = getTotals(normalizedCart.items);
+
+    const Razorpay = require('razorpay');
+    const razorpayInstance = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const options = {
+      amount: Math.round(totals.total * 100),
+      currency: 'INR',
+      receipt: `receipt_order_${req.user.id}_${Date.now()}`,
+    };
+
+    const order = await razorpayInstance.orders.create(options);
+
+    res.json(
+      new ApiResponse(200, {
+        isRazorpayEnabled: true,
+        key: process.env.RAZORPAY_KEY_ID,
+        order,
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   placeOrder,
   getOrderById,
   getUserOrders,
+  initRazorpay,
   placeOrderSchema,
 };
